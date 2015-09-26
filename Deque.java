@@ -1,33 +1,31 @@
-import edu.princeton.cs.algs4.StdOut;
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item>
 {
     private class Node<Item>
 {
-    Item item;
-    Node<Item> prev;
-    Node<Item> next;
+    private Item item;
+    private Node<Item> prev;
+    private Node<Item> next;
     public Node(Item item)
     {
         this.item = item;
     }
 }
-    private class dequeIterator implements Iterator<Item>
+    private class DequeIterator implements Iterator<Item>
 {
-    Node<Item> current;
-    dequeIterator()
+    private Node<Item> current;
+    DequeIterator()
     {
         current = first;
     }
-    public boolean hasNext(){
-        if (current.next == null)
-            return false;
-            else
-            return true;
+    public boolean hasNext()
+    {
+        return current != null;
     }
-    public Item next(){ 
-        if (current.next == null) 
+    public Item next()
+    { 
+        if (current == null) 
             throw (new java.util.NoSuchElementException());
         else
         {
@@ -42,20 +40,18 @@ public class Deque<Item> implements Iterable<Item>
     }
     
 }
-    private Node first;
-    private Node last;
-    public Deque(){}
-    public boolean isEmpty(){ if (first==null) return true; else return false; }
+    private Node first = null;
+    private Node last = null;
+    private int length = 0;
+    public Deque() { }
+    public boolean isEmpty()
+    { 
+        return first == null;
+    }
+    
     public int size()
     {
-        dequeIterator iter = new dequeIterator();
-        int counter = 0;
-        while (iter.hasNext())
-        {
-            counter++;
-            iter.next();
-        }
-        return counter;
+        return length;
     }
     public void addFirst(Item item)
     {
@@ -65,6 +61,7 @@ public class Deque<Item> implements Iterable<Item>
         }
         else
         {
+            length++;
             Node<Item> newNode = new Node(item);
             if (first == null)
             {
@@ -87,6 +84,7 @@ public class Deque<Item> implements Iterable<Item>
         }
         else
         {
+            length++;
             Node<Item> newNode = new Node(item);
             if (last == null)
             {
@@ -103,38 +101,52 @@ public class Deque<Item> implements Iterable<Item>
     }
     public Item removeFirst()
     {
-        Node<Item> result = first;
-        if (first.next != null)
+        if (first != null)
         {
-            first = first.next;
-            first.prev = null;
+            Node<Item> result = first;
+            if (first.next != null)
+            {
+                first = first.next;
+                first.prev = null;
+            }
+            else
+            {
+                first.next = null;
+                first.prev = null;
+                first = null;
+                last = null;
+            }
+            length--;
+            return result.item;
         }
         else
-        {
-            first.next = null;
-            first.prev = null;
-            first = null;
-        }
-        return result.item;
+            throw (new java.util.NoSuchElementException());
     }
     public Item removeLast()
     {
-        Node<Item> out = last;
-        if (last.prev != null)
-        {
-            last = last.prev;
-            last.next = null;
-        }
+        if (last == null)
+            throw (new java.util.NoSuchElementException());
         else
         {
-            last.next = null;
-            last.prev = null;
-            last = null;
+            Node<Item> out = last;
+            if (last.prev != null)
+            {
+                last = last.prev;
+                last.next = null;
+            }
+            else
+            {
+                last.next = null;
+                last.prev = null;
+                last = null;
+                first = null;
+            }
+            length--;
+            return out.item;
         }
-        return out.item;
     }
-    public Iterator<Item> iterator(){ return new dequeIterator(); }
-    public static void main(String args[])
+    public Iterator<Item> iterator() { return new DequeIterator(); }
+    public static void main(String[] args)
     {
     }
 }
